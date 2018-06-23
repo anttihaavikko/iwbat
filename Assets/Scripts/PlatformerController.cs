@@ -494,7 +494,7 @@ public class PlatformerController : MonoBehaviour {
         currentGrowth++;
 
         if (currentGrowth >= growthSprites.Length)
-            currentGrowth = 0;
+            currentGrowth = growthSprites.Length - 1;
 
         growthSprite.sprite = growthSprites[currentGrowth];
     }
