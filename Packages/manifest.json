@@ -1,4 +1,5 @@
 {
-	"dependencies": {
-	}
+  "dependencies": {
+    "com.unity.2d.spriteshape": "1.0.12-preview"
+  }
 }

@@ -19,7 +19,7 @@ public class PlatformerController : MonoBehaviour {
 	private Rigidbody2D body;
 	public Transform[] groundChecks;
 	public Transform[] wallChecks;
-	public LayerMask groundLayer;
+	public LayerMask groundLayer, canJumpLayers;
 	public float groundCheckRadius = 0.05f;
 	public bool checkForEdges = false;
 	private float groundAngle = 0;
@@ -35,6 +35,8 @@ public class PlatformerController : MonoBehaviour {
 	private bool running = false;
 	private bool grounded = false;
 	private bool doubleJumped = false;
+    private bool respawning = false;
+    private bool jumped = false;
 
 	// misc
 	private float jumpBufferedFor = 0;
@@ -52,6 +54,13 @@ public class PlatformerController : MonoBehaviour {
 	// animations
 	private Animator anim;
     private FollowCamera cam;
+
+    private int hp = 3, hpMax = 3;
+    private float hitCooldown = 0.3f;
+
+    private int currentGrowth = 0;
+    public Sprite[] growthSprites;
+    public SpriteRenderer growthSprite;
 
 	// ###############################################################
 
@@ -73,7 +82,16 @@ public class PlatformerController : MonoBehaviour {
             SceneManager.LoadScene("Main");
         }
 
+        if (Application.isEditor && Input.GetKeyDown(KeyCode.G))
+        {
+            Grow();
+        }
+
+        if (respawning) return;
+
 		bool wasGrounded = grounded;
+
+        if (hitCooldown > 0f) hitCooldown -= Time.deltaTime;
 
 		if (!checkForEdges) {
 
@@ -83,7 +101,7 @@ public class PlatformerController : MonoBehaviour {
 
 				Transform groundCheck = groundChecks [i];
 
-				bool tempGrounded = Physics2D.OverlapCircle (groundCheck.position, groundCheckRadius, groundLayer);
+                bool tempGrounded = Physics2D.OverlapCircle (groundCheck.position, groundCheckRadius, canJumpLayers);
 
 				grounded = tempGrounded ? tempGrounded : grounded;
 
@@ -101,8 +119,13 @@ public class PlatformerController : MonoBehaviour {
 		}
 
 		// double fall gravity
-		if (!grounded && body.velocity.y <= 0.5f) {
-			body.gravityScale = gravity * 2.5f;
+        if (!grounded && body.velocity.y <= 0.5f && jumped) {
+			body.gravityScale = gravity * 1.5f;
+
+            //float maxFallSpeed = -10f;
+
+            //if (body.velocity.y < -maxFallSpeed)
+                //body.velocity = new Vector2(body.velocity.x, -maxFallSpeed);
 		}
 
 		// just landed
@@ -199,6 +222,7 @@ public class PlatformerController : MonoBehaviour {
 
 			if (wallHug) {
 				walljumpDir = -transform.localScale.x;
+                body.velocity = new Vector2(0, body.velocity.y);
 			}
 
 			if ((wallHug || wallHugBuffer > 0f) && !checkForEdges) {
@@ -236,7 +260,7 @@ public class PlatformerController : MonoBehaviour {
 
 			running = inputDirection < -inputBuffer || inputDirection > inputBuffer;
 
-			if (!grounded) {
+            if (!grounded || wallHug) {
 				running = false; 
 			}
 
@@ -258,6 +282,8 @@ public class PlatformerController : MonoBehaviour {
     {
         body.velocity = new Vector2(body.velocity.x, 0); // reset vertical speed
 
+        jumped = true;
+
         if (!grounded)
         {
             doubleJumped = true;
@@ -273,11 +299,8 @@ public class PlatformerController : MonoBehaviour {
 
         //AudioManager.Instance.PlayEffectAt (0, transform.position, 0.5f);
 
-        // jump particles
-        if (jumpParticles)
-        {
-            Instantiate(jumpParticles, transform.position, Quaternion.identity);
-        }
+        EffectManager.Instance.AddEffect(5, transform.position + Vector3.down * 0.5f);
+        EffectManager.Instance.AddEffect(6, transform.position + Vector3.down * 0.5f);
 
         // animation
         if (anim)
@@ -301,6 +324,8 @@ public class PlatformerController : MonoBehaviour {
 
 	private void Land() {
 
+        jumped = false;
+
 		anim.ResetTrigger ("jump");
 
 		doubleJumped = false;
@@ -314,10 +339,8 @@ public class PlatformerController : MonoBehaviour {
 
 		//AudioManager.Instance.PlayEffectAt (1, transform.position, 0.5f);
 
-		// landing particles
-		//if (landParticles) {
-		//	Instantiate (landParticles, transform.position + Vector3.up * 0.25f, Quaternion.identity);
-		//}
+        EffectManager.Instance.AddEffect(5, transform.position + Vector3.down * 0.5f);
+        EffectManager.Instance.AddEffect(6, transform.position + Vector3.down * 0.5f);
 
 		// animation
 		if (anim) {
@@ -336,6 +359,10 @@ public class PlatformerController : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll) {
 		//groundAngle = Mathf.Atan2(coll.contacts [0].normal.y, coll.contacts [0].normal.x) * Mathf.Rad2Deg - 90;
+
+        if(coll.gameObject.tag == "Enemy") {
+            TakeDamage(coll.gameObject.GetComponent<Slime>().damage, coll.contacts[0].point);
+        }
 	}
 
 	public float GetGroundAngle() {
@@ -344,4 +371,63 @@ public class PlatformerController : MonoBehaviour {
 		}
 		return groundAngle;
 	}
+
+    public void TakeDamage(int damage, Vector3 from)
+    {
+        if (hitCooldown > 0f || respawning)
+            return;
+
+        anim.ResetTrigger("flash");
+        anim.SetTrigger("flash");
+
+        if (damage > 0)
+        {
+            hp -= damage;
+            cam.BaseEffect(0.5f);
+            EffectManager.Instance.AddEffect(4, transform.position);
+
+            var diff = transform.position - from;
+            body.AddForce(diff.normalized * 5f, ForceMode2D.Impulse);
+        }
+
+        if (hp <= 0)
+        {
+            Die();
+        }
+
+        hitCooldown = 0.3f;
+    }
+
+    void Die() {
+
+        if (respawning) return;
+
+        respawning = true;
+
+        spriteObject.gameObject.SetActive(false);
+
+        EffectManager.Instance.AddEffect(1, transform.position);
+        EffectManager.Instance.AddEffect(2, transform.position);
+        EffectManager.Instance.AddEffect(3, transform.position);
+
+        cam.BaseEffect(2f);
+
+        Invoke("Respawn", 1f);
+    }
+
+    void Respawn() {
+        respawning = false;
+        hp = hpMax;
+        transform.position = Vector3.zero;
+        spriteObject.gameObject.SetActive(true);
+    }
+
+    public void Grow() {
+        currentGrowth++;
+
+        if (currentGrowth >= growthSprites.Length)
+            currentGrowth = 0;
+
+        growthSprite.sprite = growthSprites[currentGrowth];
+    }
 }

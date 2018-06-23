@@ -32,7 +32,8 @@ public class FollowCamera : MonoBehaviour {
 		if (target) {
 			Vector3 point = Camera.main.WorldToScreenPoint(target.position);
 			Vector3 delta = target.position - Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z));
-			Vector3 destination = transform.position + delta + new Vector3(offset.x * target.localScale.x, offset.y, offset.z);
+            float yoffset = InputMagic.Instance.GetAxis(InputMagic.STICK_OR_DPAD_Y);
+            Vector3 destination = transform.position + delta + new Vector3(offset.x * target.localScale.x, yoffset * 3f, offset.z);
             float z = Mathf.MoveTowards (transform.position.z, baseZoom - body.velocity.magnitude * zoomVelocityMultiplier, Time.deltaTime * 10f);
 			destination.z = z;
 			transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);

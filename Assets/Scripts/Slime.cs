@@ -9,7 +9,7 @@ public class Slime : MonoBehaviour {
 	public float straighteningMod = 1f;
 
     protected Rigidbody2D body;
-    protected SpriteRenderer sprite;
+    public SpriteRenderer sprite;
     protected int direction;
 
     protected bool grounded = false;
@@ -26,6 +26,8 @@ public class Slime : MonoBehaviour {
     public int damage = 1;
     public int armor = 0;
 
+    public float aggroRadius = 30f;
+
     public Animator anim;
 
     private float hitCooldown = 0f;
@@ -33,12 +35,18 @@ public class Slime : MonoBehaviour {
     public Transform shadow;
     private FollowCamera cam;
 
+    public SpriteRenderer ears, wing1, wing2;
+
+    public bool flying = false;
+
 	// Use this for initialization
 	public void Start () {
 
 		body = GetComponent<Rigidbody2D> ();
-		sprite = GetComponent<SpriteRenderer> ();
 		direction = (Random.value < 0.5f) ? 1 : -1;
+
+        sprite.color = ears.color = Color.HSVToRGB(Random.value, 0.5f, 0.99f);
+        wing1.color = wing2.color = sprite.color;
 
         hp = hpMax;
 
@@ -53,11 +61,26 @@ public class Slime : MonoBehaviour {
             RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 20f, groundLayer);
             shadow.position = hit.point;
             shadow.rotation = Quaternion.Euler(Vector3.zero);
+
+            shadow.gameObject.SetActive(hit);
         }
 
         if (hitCooldown > 0f) hitCooldown -= Time.deltaTime;
 
-		TurnToPlayer ();
+        if(!TurnToPlayer ()) {
+            return;
+        }
+
+        if(flying) {
+
+            if(Random.value < 0.075f) {
+                Vector2 dir = target.position - transform.position;
+                body.AddForce(dir.normalized * speed, ForceMode2D.Impulse);
+                return;
+            }
+
+            return;
+        }
 		
 		Vector2 p1 = new Vector2 (groundCheck.position.x - transform.localScale.x / 2 + groundCheckRadius, groundCheck.position.y - groundCheckRadius);
 		Vector2 p2 = new Vector2 (groundCheck.position.x + transform.localScale.x / 2 - groundCheckRadius, groundCheck.position.y + groundCheckRadius);
@@ -65,7 +88,7 @@ public class Slime : MonoBehaviour {
 		grounded = Physics2D.OverlapArea (p1, p2, groundLayer);
 		//animator.SetBool ("grounded", grounded);
 
-		if (grounded && Random.value < 0.1f) {
+        if (grounded && Random.value < 0.1f) {
 			body.AddForce (new Vector2 (direction * jump/5.0f * speed, 1 * jump));
 		}
 
@@ -83,14 +106,17 @@ public class Slime : MonoBehaviour {
 		}
 	}
 
-	void TurnToPlayer() {
+	bool TurnToPlayer() {
 		if (target) {
 			float dist = Vector2.Distance (target.position, transform.position);
 
-			if (dist < 30 || (dist < 60 && hp < hpMax)) {
+            if (dist < aggroRadius || (dist < aggroRadius * 2f && hp < hpMax)) {
 				direction = target.position.x < transform.position.x ? -1 : 1;
+                return true;
 			}
 		}
+
+        return false;
 	}
 
 	public void Launch(int direction) {
