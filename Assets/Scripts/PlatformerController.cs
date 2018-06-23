@@ -69,6 +69,8 @@ public class PlatformerController : MonoBehaviour {
 
     int damage = 1;
 
+    private Checkpoint checkpoint;
+
 	// ###############################################################
 
 	// Use this for initialization
@@ -419,8 +421,8 @@ public class PlatformerController : MonoBehaviour {
                 cam.BaseEffect(2.5f);
             }
 
-            EffectManager.Instance.AddEffect(1, transform.position);
-            EffectManager.Instance.AddEffect(2, transform.position);
+            EffectManager.Instance.AddEffect(1, collision.transform.position);
+            EffectManager.Instance.AddEffect(2, collision.transform.position);
 
             UpdateHp();
 
@@ -502,5 +504,13 @@ public class PlatformerController : MonoBehaviour {
     void UpdateHp() {
         imageHp.rectTransform.sizeDelta = new Vector2(85 * hp, imageHp.rectTransform.sizeDelta.y);
         imageHpMax.rectTransform.sizeDelta = new Vector2(85 * hpMax, imageHpMax.rectTransform.sizeDelta.y);
+    }
+
+    public void SetCheckpoint(Checkpoint cp) {
+        
+        if (checkpoint && checkpoint != cp)
+            checkpoint.Reset();
+
+        checkpoint = cp;
     }
 }
