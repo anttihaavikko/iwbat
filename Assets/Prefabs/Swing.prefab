@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4734281971812214}
   - component: {fileID: 61059801179940292}
   - component: {fileID: 114319668397673756}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Swing
   m_TagString: Untagged
   m_Icon: {fileID: 0}

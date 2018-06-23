@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GamepadInput;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlatformerController : MonoBehaviour {
 
@@ -61,6 +62,8 @@ public class PlatformerController : MonoBehaviour {
     private int currentGrowth = 0;
     public Sprite[] growthSprites;
     public SpriteRenderer growthSprite;
+
+    public Image imageHpMax, imageHp;
 
 	// ###############################################################
 
@@ -365,6 +368,41 @@ public class PlatformerController : MonoBehaviour {
         }
 	}
 
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+        if (collision.gameObject.tag == "Water")
+        {
+            Respawn();
+        }
+
+        if (collision.gameObject.tag == "Pickup")
+        {
+            var pu = collision.gameObject.GetComponent<Pickup>();
+
+            if (pu.type == Pickup.Type.MaxHp) {
+                hpMax++;
+                hp++;
+                cam.BaseEffect(1.5f);
+            }
+               
+            if (pu.type == Pickup.Type.Hp)
+            {
+                hp++;
+
+                if (hp > hpMax) hp = hpMax;
+                cam.BaseEffect(0.5f);
+            }
+
+            EffectManager.Instance.AddEffect(1, transform.position);
+            EffectManager.Instance.AddEffect(2, transform.position);
+
+            UpdateHp();
+
+            Destroy(pu.gameObject);
+
+        }
+	}
+
 	public float GetGroundAngle() {
 		if (Mathf.Abs (groundAngle) > 90) {
 			groundAngle = 0;
@@ -383,11 +421,13 @@ public class PlatformerController : MonoBehaviour {
         if (damage > 0)
         {
             hp -= damage;
-            cam.BaseEffect(0.5f);
+            cam.BaseEffect(1f);
             EffectManager.Instance.AddEffect(4, transform.position);
 
             var diff = transform.position - from;
             body.AddForce(diff.normalized * 5f, ForceMode2D.Impulse);
+
+            UpdateHp();
         }
 
         if (hp <= 0)
@@ -401,6 +441,8 @@ public class PlatformerController : MonoBehaviour {
     void Die() {
 
         if (respawning) return;
+
+        cam.BaseEffect(3f);
 
         respawning = true;
 
@@ -429,5 +471,10 @@ public class PlatformerController : MonoBehaviour {
             currentGrowth = 0;
 
         growthSprite.sprite = growthSprites[currentGrowth];
+    }
+
+    void UpdateHp() {
+        imageHp.rectTransform.sizeDelta = new Vector2(85 * hp, imageHp.rectTransform.sizeDelta.y);
+        imageHpMax.rectTransform.sizeDelta = new Vector2(85 * hpMax, imageHpMax.rectTransform.sizeDelta.y);
     }
 }

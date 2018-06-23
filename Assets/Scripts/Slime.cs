@@ -155,6 +155,9 @@ public class Slime : MonoBehaviour {
             EffectManager.Instance.AddEffect(2, transform.position);
             EffectManager.Instance.AddEffect(3, transform.position);
 
+            if(Random.value < 0.5f)
+                EffectManager.Instance.AddEffect(8, transform.position);
+
             cam.BaseEffect(2f);
 
             Destroy(gameObject);
