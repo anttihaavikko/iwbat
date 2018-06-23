@@ -18,7 +18,7 @@ public class BoneToLine : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		line.SetPosition (0, transform.position);
+        line.SetPosition (0, new Vector3(transform.position.x, transform.position.y, lineZ));
 
 		if (bezier) {
 			for (int i = 1; i < line.positionCount; i++) {

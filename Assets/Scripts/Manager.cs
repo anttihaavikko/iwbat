@@ -5,6 +5,13 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Manager : MonoBehaviour {
+
+    public List<string> disableThese;
+    public bool hasBandanna, hasBlade;
+    public int growths;
+    public int hpMax = 3;
+    public Vector3 spawn = Vector3.zero;
+
 	private static Manager instance = null;
 	public static Manager Instance {
 		get { return instance; }
@@ -16,6 +23,8 @@ public class Manager : MonoBehaviour {
 			return;
 		} else {
 			instance = this;
+            DontDestroyOnLoad(instance.gameObject);
+            disableThese = new List<string>();
 		}
 	}
 }

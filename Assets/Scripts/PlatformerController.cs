@@ -82,13 +82,38 @@ public class PlatformerController : MonoBehaviour {
 		gravity = body.gravityScale;
 
         cam = Camera.main.GetComponent<FollowCamera>();
+
+        // disable things already got/killed
+        foreach(var d in Manager.Instance.disableThese) {
+            var go = GameObject.Find(d);
+            if(go)
+                GameObject.Find(d).SetActive(false);
+        }
+
+        // load stuffs from manager
+        canDoubleJump = Manager.Instance.hasBandanna;
+        damage = Manager.Instance.hasBlade ? 2 : 1;
+
+        bandanna.SetActive(canDoubleJump);
+        blade.SetActive(Manager.Instance.hasBlade);
+
+        currentGrowth = Manager.Instance.growths;
+        growthSprite.sprite = growthSprites[currentGrowth];
+
+        if(Manager.Instance.spawn != Vector3.zero)
+            transform.position = Manager.Instance.spawn;
+
+        hp = hpMax = Manager.Instance.hpMax;
+        UpdateHp();
+
+        cam.transform.position = new Vector3(transform.position.x, transform.position.y, cam.transform.position.z);
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
         if(Application.isEditor && Input.GetKeyDown(KeyCode.R)) {
-            SceneManager.LoadScene("Main");
+            Respawn();
         }
 
         if (Application.isEditor && Input.GetKeyDown(KeyCode.G))
@@ -393,6 +418,7 @@ public class PlatformerController : MonoBehaviour {
             var pu = collision.gameObject.GetComponent<Pickup>();
 
             if (pu.type == Pickup.Type.MaxHp) {
+                Manager.Instance.disableThese.Add(pu.gameObject.name);
                 hpMax++;
                 hp++;
                 cam.BaseEffect(1.5f);
@@ -409,16 +435,20 @@ public class PlatformerController : MonoBehaviour {
 
             if (pu.type == Pickup.Type.DoubleJump)
             {
+                Manager.Instance.disableThese.Add(pu.gameObject.name);
                 bandanna.SetActive(true);
                 canDoubleJump = true;
                 cam.BaseEffect(2.5f);
+                Manager.Instance.hasBandanna = true;
             }
 
             if (pu.type == Pickup.Type.Damage)
             {
+                Manager.Instance.disableThese.Add(pu.gameObject.name);
                 blade.SetActive(true);
                 damage = 2;
                 cam.BaseEffect(2.5f);
+                Manager.Instance.hasBlade = true;
             }
 
             EffectManager.Instance.AddEffect(1, collision.transform.position);
@@ -487,9 +517,11 @@ public class PlatformerController : MonoBehaviour {
 
     void Respawn() {
         respawning = false;
-        hp = hpMax;
-        transform.position = Vector3.zero;
-        spriteObject.gameObject.SetActive(true);
+        //hp = hpMax;
+        //transform.position = Vector3.zero;
+        //spriteObject.gameObject.SetActive(true);
+
+        SceneManager.LoadSceneAsync("Main");
     }
 
     public void Grow() {
@@ -499,11 +531,14 @@ public class PlatformerController : MonoBehaviour {
             currentGrowth = growthSprites.Length - 1;
 
         growthSprite.sprite = growthSprites[currentGrowth];
+
+        Manager.Instance.growths = currentGrowth;
     }
 
     void UpdateHp() {
         imageHp.rectTransform.sizeDelta = new Vector2(85 * hp, imageHp.rectTransform.sizeDelta.y);
         imageHpMax.rectTransform.sizeDelta = new Vector2(85 * hpMax, imageHpMax.rectTransform.sizeDelta.y);
+        Manager.Instance.hpMax = hpMax;
     }
 
     public void SetCheckpoint(Checkpoint cp) {
@@ -512,5 +547,7 @@ public class PlatformerController : MonoBehaviour {
             checkpoint.Reset();
 
         checkpoint = cp;
+
+        Manager.Instance.spawn = cp.transform.position;
     }
 }
