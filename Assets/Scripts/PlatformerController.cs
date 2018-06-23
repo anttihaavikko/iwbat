@@ -65,6 +65,10 @@ public class PlatformerController : MonoBehaviour {
 
     public Image imageHpMax, imageHp;
 
+    public GameObject blade, bandanna;
+
+    int damage = 1;
+
 	// ###############################################################
 
 	// Use this for initialization
@@ -176,6 +180,7 @@ public class PlatformerController : MonoBehaviour {
                 anim.SetTrigger("swing");
                 swingCooldown = swingCooldownMax;
                 GameObject go = EffectManager.Instance.AddEffectToParent(0, transform.position + Vector3.right * spriteObject.transform.localScale.x, transform);
+                go.GetComponent<Swing>().damage = damage;
                 go.transform.localScale = spriteObject.transform.localScale;
             }
 
@@ -292,6 +297,12 @@ public class PlatformerController : MonoBehaviour {
             doubleJumped = true;
         }
 
+        if (canDoubleJump && doubleJumped)
+        {
+            EffectManager.Instance.AddEffect(7, transform.position + Vector3.down * 0.5f);
+            EffectManager.Instance.AddEffect(9, transform.position + Vector3.down * 0.5f);
+        }
+
         jumpBufferedFor = 0;
 
         // jump sounds
@@ -383,6 +394,7 @@ public class PlatformerController : MonoBehaviour {
                 hpMax++;
                 hp++;
                 cam.BaseEffect(1.5f);
+                Grow();
             }
                
             if (pu.type == Pickup.Type.Hp)
@@ -391,6 +403,20 @@ public class PlatformerController : MonoBehaviour {
 
                 if (hp > hpMax) hp = hpMax;
                 cam.BaseEffect(0.5f);
+            }
+
+            if (pu.type == Pickup.Type.DoubleJump)
+            {
+                bandanna.SetActive(true);
+                canDoubleJump = true;
+                cam.BaseEffect(2.5f);
+            }
+
+            if (pu.type == Pickup.Type.Damage)
+            {
+                blade.SetActive(true);
+                damage = 2;
+                cam.BaseEffect(2.5f);
             }
 
             EffectManager.Instance.AddEffect(1, transform.position);

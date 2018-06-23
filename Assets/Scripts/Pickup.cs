@@ -8,7 +8,8 @@ public class Pickup : MonoBehaviour {
         Hp,
         DoubleJump,
         WallJump,
-        Dash
+        Dash,
+        Damage
     }
 
     public Type type;

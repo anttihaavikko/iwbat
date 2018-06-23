@@ -5,6 +5,7 @@ using UnityEngine;
 public class Swing : MonoBehaviour {
 
     private bool isDeadly = false;
+    public int damage = 1;
 
 	// Use this for initialization
 	void Start () {
@@ -27,7 +28,7 @@ public class Swing : MonoBehaviour {
             return;
         
         if(collision.gameObject.tag == "Enemy") {
-            collision.gameObject.GetComponent<Slime>().TakeDamage(1, transform.position);
+            collision.gameObject.GetComponent<Slime>().TakeDamage(damage, transform.position);
         }
     }
 
@@ -38,7 +39,7 @@ public class Swing : MonoBehaviour {
 
         if (collision.gameObject.tag == "Enemy")
         {
-            collision.gameObject.GetComponent<Slime>().TakeDamage(1, transform.position);
+            collision.gameObject.GetComponent<Slime>().TakeDamage(damage, transform.position);
         }
 	}
 }
