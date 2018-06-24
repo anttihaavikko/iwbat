@@ -487,7 +487,7 @@ public class InputMagic : MonoBehaviour {
 			return TryToGetKeyDown (padB) || Input.GetKeyDown(KeyCode.C);
 		}
 		if (button == InputMagic.X) {
-			return TryToGetKeyDown (padX) || Input.GetKeyDown(KeyCode.X);
+            return TryToGetKeyDown (padX) || Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.M);
 		}
 		if (button == InputMagic.Y) {
 			return TryToGetKeyDown (padY) || Input.GetKeyDown(KeyCode.V);
@@ -511,7 +511,7 @@ public class InputMagic : MonoBehaviour {
 			return TryToGetKey (padB) || Input.GetKey(KeyCode.C);
 		}
 		if (button == InputMagic.X) {
-			return TryToGetKey (padX) || Input.GetKey(KeyCode.X);
+            return TryToGetKey (padX) || Input.GetKey(KeyCode.X) || Input.GetKey(KeyCode.M);
 		}
 		if (button == InputMagic.Y) {
 			return TryToGetKey (padY) || Input.GetKey(KeyCode.V);
@@ -535,7 +535,7 @@ public class InputMagic : MonoBehaviour {
 			return TryToGetKeyUp (padB) || Input.GetKeyUp(KeyCode.C);
 		}
 		if (button == InputMagic.X) {
-			return TryToGetKeyUp (padX) || Input.GetKeyUp(KeyCode.X);
+            return TryToGetKeyUp (padX) || Input.GetKeyUp(KeyCode.X) || Input.GetKeyUp(KeyCode.M);
 		}
 		if (button == InputMagic.Y) {
 			return TryToGetKeyUp (padY) || Input.GetKeyUp(KeyCode.V);

@@ -25,9 +25,16 @@ public class Door : MonoBehaviour {
 
 	public void Open() {
 		targetPosition = startPosition;
+        AudioManager.Instance.PlayEffectAt(12, transform.position, 2.5f);
 	}
 
 	public void Close() {
         targetPosition = startPosition + closePosition;
+        AudioManager.Instance.PlayEffectAt(12, transform.position, 2.5f);
+        Invoke("CloseSound", 0.2f);
 	}
+
+    void CloseSound() {
+        AudioManager.Instance.PlayEffectAt(13, transform.position, 2.5f);
+    }
 }

@@ -21,7 +21,7 @@ public class BossRoom : MonoBehaviour {
 
             started = true;
 
-            AudioManager.Instance.ChangeMusic(1, 0.5f, 0.5f, 0f);
+            AudioManager.Instance.ChangeMusic(1, 0.1f, 0.1f, 0f);
 
             foreach(var d in doors) {
                 d.Close();

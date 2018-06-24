@@ -71,6 +71,8 @@ public class PlatformerController : MonoBehaviour {
 
     private Checkpoint checkpoint;
 
+    public Dimmer dimmer;
+
 	// ###############################################################
 
 	// Use this for initialization
@@ -206,12 +208,17 @@ public class PlatformerController : MonoBehaviour {
 
             // swing
             if(InputMagic.Instance.GetButtonDown(InputMagic.X) && swingCooldown <= 0f) {
+
                 anim.ResetTrigger("swing");
                 anim.SetTrigger("swing");
                 swingCooldown = swingCooldownMax;
                 GameObject go = EffectManager.Instance.AddEffectToParent(0, transform.position + Vector3.right * spriteObject.transform.localScale.x, transform);
                 go.GetComponent<Swing>().damage = damage;
                 go.transform.localScale = spriteObject.transform.localScale;
+
+                AudioManager.Instance.PlayEffectAt(33, go.transform.position, 2.5f);
+                AudioManager.Instance.PlayEffectAt(32, go.transform.position, 2f);
+                AudioManager.Instance.PlayEffectAt(16, go.transform.position, 1f);
             }
 
 			// jump
@@ -316,9 +323,16 @@ public class PlatformerController : MonoBehaviour {
 		}
 	}
 
+    private void FootStepSound() {
+        AudioManager.Instance.PlayEffectAt(31, transform.position, 0.1f);
+    }
+
     private void Jump()
     {
         body.velocity = new Vector2(body.velocity.x, 0); // reset vertical speed
+
+        AudioManager.Instance.PlayEffectAt(22, transform.position, 1f);
+        AudioManager.Instance.PlayEffectAt(23, transform.position, 0.5f);
 
         jumped = true;
 
@@ -386,6 +400,9 @@ public class PlatformerController : MonoBehaviour {
         EffectManager.Instance.AddEffect(5, transform.position + Vector3.down * 0.5f);
         EffectManager.Instance.AddEffect(6, transform.position + Vector3.down * 0.5f);
 
+        AudioManager.Instance.PlayEffectAt(26, transform.position, 0.3f);
+        AudioManager.Instance.PlayEffectAt(35, transform.position, 0.5f);
+
 		// animation
 		if (anim) {
 			anim.speed = 1f;
@@ -414,7 +431,9 @@ public class PlatformerController : MonoBehaviour {
         if (collision.gameObject.tag == "Water")
         {
             Manager.Instance.hasDied = true;
-            Respawn();
+            AudioManager.Instance.PlayEffectAt(30, transform.position, 1f);
+            dimmer.FadeIn(1f);
+            Invoke("Respawn", 1f);
         }
 
         if (collision.gameObject.tag == "Pickup")
@@ -435,6 +454,17 @@ public class PlatformerController : MonoBehaviour {
 
                 if (hp > hpMax) hp = hpMax;
                 cam.BaseEffect(0.5f);
+
+                AudioManager.Instance.PlayEffectAt(18, transform.position, 1f);
+                AudioManager.Instance.PlayEffectAt(25, transform.position, 0.3f);
+                AudioManager.Instance.PlayEffectAt(2, transform.position, 0.5f);
+                AudioManager.Instance.PlayEffectAt(3, transform.position, 0.5f);
+
+            } else {
+                AudioManager.Instance.PlayEffectAt(0, transform.position, 1f);
+                AudioManager.Instance.PlayEffectAt(25, transform.position, 1f);
+                AudioManager.Instance.PlayEffectAt(2, transform.position, 1f);
+                AudioManager.Instance.PlayEffectAt(3, transform.position, 1f);
             }
 
             if (pu.type == Pickup.Type.DoubleJump)
@@ -489,6 +519,12 @@ public class PlatformerController : MonoBehaviour {
             var diff = transform.position - from;
             body.AddForce(diff.normalized * 5f, ForceMode2D.Impulse);
 
+            AudioManager.Instance.PlayEffectAt(21, transform.position, 0.75f);
+            AudioManager.Instance.PlayEffectAt(8, transform.position, 1f);
+
+            if(Random.value < 0.2f)
+                AudioManager.Instance.PlayEffectAt(20, transform.position, 1f);
+
             UpdateHp();
         }
 
@@ -518,7 +554,15 @@ public class PlatformerController : MonoBehaviour {
         EffectManager.Instance.AddEffect(2, transform.position);
         EffectManager.Instance.AddEffect(3, transform.position);
 
+        AudioManager.Instance.PlayEffectAt(3, transform.position, 0.5f);
+        AudioManager.Instance.PlayEffectAt(5, transform.position, 1f);
+        AudioManager.Instance.PlayEffectAt(9, transform.position, 1f);
+        AudioManager.Instance.PlayEffectAt(17, transform.position, 1f);
+        AudioManager.Instance.PlayEffectAt(15, transform.position, 1f);
+
         cam.BaseEffect(2f);
+
+        dimmer.FadeIn(1f);
 
         Invoke("Respawn", 1f);
     }
@@ -550,12 +594,25 @@ public class PlatformerController : MonoBehaviour {
     }
 
     public void SetCheckpoint(Checkpoint cp) {
-        
-        if (checkpoint && checkpoint != cp)
-            checkpoint.Reset();
+
+        if(checkpoint != cp) {
+            EffectManager.Instance.AddEffect(2, cp.transform.position + Vector3.up * 1f);
+            EffectManager.Instance.AddEffect(9, cp.transform.position + Vector3.up * 1f);
+
+            Invoke("CheckpointSound", 0.2f);
+
+            if(checkpoint) checkpoint.Reset();
+        }
 
         checkpoint = cp;
 
         Manager.Instance.spawn = cp.transform.position;
+    }
+
+    void CheckpointSound() {
+        AudioManager.Instance.PlayEffectAt(6, checkpoint.transform.position + Vector3.up * 1f);
+        AudioManager.Instance.PlayEffectAt(13, checkpoint.transform.position + Vector3.up * 1f);
+        AudioManager.Instance.PlayEffectAt(27, checkpoint.transform.position + Vector3.up * 1f);
+        AudioManager.Instance.PlayEffectAt(29, checkpoint.transform.position + Vector3.up * 1f);
     }
 }

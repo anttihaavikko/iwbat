@@ -39,6 +39,8 @@ public class Slime : MonoBehaviour {
 
     public bool flying = false;
 
+    public int extraSound = 17;
+
 	// Use this for initialization
 	public void Start () {
 
@@ -89,6 +91,7 @@ public class Slime : MonoBehaviour {
 		//animator.SetBool ("grounded", grounded);
 
         if (grounded && Random.value < 0.1f) {
+            JumpSound();
 			body.AddForce (new Vector2 (direction * jump/5.0f * speed, 1 * jump));
 		}
 
@@ -102,6 +105,7 @@ public class Slime : MonoBehaviour {
 		if (!grounded && hangTime > 150) {
 			int dir = Random.value < 0.5f ? 1 : -1;
 			body.AddTorque (dir * body.mass * jump / 20f * straighteningMod, ForceMode2D.Impulse);
+            JumpSound();
 			hangTime = 0;
 		}
 	}
@@ -118,6 +122,11 @@ public class Slime : MonoBehaviour {
 
         return false;
 	}
+
+    void JumpSound() {
+        AudioManager.Instance.PlayEffectAt(5, transform.position, 0.3f);
+        AudioManager.Instance.PlayEffectAt(extraSound, transform.position, 0.3f);
+    }
 
 	public void Launch(int direction) {
 		
@@ -147,6 +156,13 @@ public class Slime : MonoBehaviour {
 
             var diff = transform.position - from;
             body.AddForce(diff.normalized * 5f, ForceMode2D.Impulse);
+
+            AudioManager.Instance.PlayEffectAt(19, transform.position, 0.5f);
+            AudioManager.Instance.PlayEffectAt(5, transform.position, 0.5f);
+            AudioManager.Instance.PlayEffectAt(17, transform.position, 0.5f);
+
+            if(Random.value < 0.2f)
+                AudioManager.Instance.PlayEffectAt(20, transform.position, 0.75f);
         }
 
         if (hp <= 0)
@@ -154,6 +170,18 @@ public class Slime : MonoBehaviour {
             EffectManager.Instance.AddEffect(1, transform.position);
             EffectManager.Instance.AddEffect(2, transform.position);
             EffectManager.Instance.AddEffect(3, transform.position);
+
+            AudioManager.Instance.PlayEffectAt(3, transform.position, 0.5f);
+            AudioManager.Instance.PlayEffectAt(5, transform.position, 1f);
+            AudioManager.Instance.PlayEffectAt(9, transform.position, 1f);
+            AudioManager.Instance.PlayEffectAt(17, transform.position, 1f);
+            AudioManager.Instance.PlayEffectAt(15, transform.position, 1f);
+
+            if(hpMax >= 7) {
+                AudioManager.Instance.PlayEffectAt(4, transform.position, 0.1f);
+                AudioManager.Instance.PlayEffectAt(15, transform.position, 1.5f);
+                AudioManager.Instance.PlayEffectAt(25, transform.position, 1f);
+            }
 
             if(Random.value < 0.5f)
                 EffectManager.Instance.AddEffect(8, transform.position);
