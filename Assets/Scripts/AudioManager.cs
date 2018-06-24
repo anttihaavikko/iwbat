@@ -69,6 +69,8 @@ public class AudioManager : MonoBehaviour {
 		fadeOutPos = 0f;
 		fadeInPos = -1f;
 
+        Debug.Log("changing music to " + next);
+
 		fadeOutDuration = fadeOutDur;
 		fadeInDuration = fadeInDur;
 
@@ -91,6 +93,31 @@ public class AudioManager : MonoBehaviour {
 	}
 
 	void Update() {
+
+        if (fadeInPos < 1f)
+        {
+            fadeInPos += Time.unscaledDeltaTime / fadeInDuration;
+        }
+
+        if (fadeOutPos < 1f)
+        {
+            fadeOutPos += Time.unscaledDeltaTime / fadeOutDuration;
+        }
+
+        if (curMusic && fadeInPos >= 0f)
+        {
+            curMusic.volume = Mathf.Lerp(0f, musVolume, fadeInPos);
+        }
+
+        if (prevMusic)
+        {
+            prevMusic.volume = Mathf.Lerp(musVolume, 0f, fadeOutPos);
+
+            if (prevMusic.volume <= 0f)
+            {
+                prevMusic.Stop();
+            }
+        }
 
 		float targetPitch = 1f;
 		float targetLowpass = (doingLowpass) ? 5000f : 15000f;

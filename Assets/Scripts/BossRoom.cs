@@ -7,6 +7,7 @@ public class BossRoom : MonoBehaviour {
     public Door[] doors;
     public Slime boss;
     private bool done = false;
+    private bool started = false;
     private string bossName;
 
 	private void Start()
@@ -16,7 +17,12 @@ public class BossRoom : MonoBehaviour {
 
 	private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Player" && !done) {
+        if(collision.gameObject.tag == "Player" && !started) {
+
+            started = true;
+
+            AudioManager.Instance.ChangeMusic(1, 0.5f, 0.5f, 0f);
+
             foreach(var d in doors) {
                 d.Close();
             }
@@ -31,7 +37,9 @@ public class BossRoom : MonoBehaviour {
             Manager.Instance.disableThese.Add(name);
             Manager.Instance.disableThese.Add(bossName);
 
-            Invoke("OpenDoors", 2f);
+            AudioManager.Instance.ChangeMusic(0, 2f, 2f, 2f);
+
+            Invoke("OpenDoors", 3f);
         }
 	}
 

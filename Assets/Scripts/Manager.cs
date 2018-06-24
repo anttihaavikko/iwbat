@@ -11,6 +11,7 @@ public class Manager : MonoBehaviour {
     public int growths;
     public int hpMax = 3;
     public Vector3 spawn = Vector3.zero;
+    public bool hasDied;
 
 	private static Manager instance = null;
 	public static Manager Instance {

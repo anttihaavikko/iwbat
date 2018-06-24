@@ -65,7 +65,7 @@ public class PlatformerController : MonoBehaviour {
 
     public Image imageHpMax, imageHp;
 
-    public GameObject blade, bandanna;
+    public GameObject blade, bandanna, eyepatch;
 
     int damage = 1;
 
@@ -105,6 +105,9 @@ public class PlatformerController : MonoBehaviour {
 
         hp = hpMax = Manager.Instance.hpMax;
         UpdateHp();
+
+        if (Manager.Instance.hasDied)
+            eyepatch.SetActive(true);
 
         cam.transform.position = new Vector3(transform.position.x, transform.position.y, cam.transform.position.z);
 	}
@@ -410,6 +413,7 @@ public class PlatformerController : MonoBehaviour {
 	{
         if (collision.gameObject.tag == "Water")
         {
+            Manager.Instance.hasDied = true;
             Respawn();
         }
 
@@ -499,6 +503,10 @@ public class PlatformerController : MonoBehaviour {
     void Die() {
 
         if (respawning) return;
+
+        Manager.Instance.hasDied = true;
+
+        AudioManager.Instance.BackToDefaultMusic();
 
         cam.BaseEffect(3f);
 
