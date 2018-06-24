@@ -483,6 +483,8 @@ public class PlatformerController : MonoBehaviour {
                 hp++;
                 cam.BaseEffect(1.5f);
                 Grow();
+
+                EffectManager.Instance.AddEffect(11, collision.transform.position);
             }
                
             if (pu.type == Pickup.Type.Hp)
@@ -491,6 +493,8 @@ public class PlatformerController : MonoBehaviour {
 
                 if (hp > hpMax) hp = hpMax;
                 cam.BaseEffect(0.5f);
+
+                EffectManager.Instance.AddEffect(11, collision.transform.position);
 
                 AudioManager.Instance.PlayEffectAt(18, transform.position, 1f);
                 AudioManager.Instance.PlayEffectAt(25, transform.position, 0.3f);
@@ -511,6 +515,7 @@ public class PlatformerController : MonoBehaviour {
                 canDoubleJump = true;
                 cam.BaseEffect(2.5f);
                 Manager.Instance.hasBandanna = true;
+                EffectManager.Instance.AddEffect(12, collision.transform.position);
             }
 
             if (pu.type == Pickup.Type.Damage)
@@ -520,6 +525,7 @@ public class PlatformerController : MonoBehaviour {
                 damage = 2;
                 cam.BaseEffect(2.5f);
                 Manager.Instance.hasBlade = true;
+                EffectManager.Instance.AddEffect(12, collision.transform.position);
             }
 
             EffectManager.Instance.AddEffect(1, collision.transform.position);
