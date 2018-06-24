@@ -70,7 +70,7 @@ public class Slime : MonoBehaviour {
             return;
         }
 
-        var b = Instantiate(bulletPrefab, (Vector2)transform.position + dirToPlayer.normalized * 2f, Quaternion.identity) as Bullet;
+        var b = Instantiate(bulletPrefab, (Vector2)transform.position + dirToPlayer.normalized * 1.5f, Quaternion.identity) as Bullet;
         b.sprite.color = sprite.color;
         b.damage = damage;
         b.canBounce = spitBounces;
