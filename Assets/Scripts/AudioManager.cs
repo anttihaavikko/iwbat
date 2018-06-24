@@ -26,6 +26,8 @@ public class AudioManager : MonoBehaviour {
 
 	private bool doingLowpass, doingHighpass;
 
+    public float targetPitch = 1f;
+
 	/******/
 
 	private static AudioManager instance = null;
@@ -117,7 +119,6 @@ public class AudioManager : MonoBehaviour {
             }
         }
 
-		float targetPitch = 1f;
 		float targetLowpass = (doingLowpass) ? 5000f : 15000f;
 		float targetHighpass = (doingHighpass) ? 600f : 10f;
 		float changeSpeed = 0.1f;

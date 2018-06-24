@@ -125,6 +125,7 @@ public class Slime : MonoBehaviour {
 
             if(Random.value < 0.075f) {
                 body.AddForce(dirToPlayer.normalized * speed, ForceMode2D.Impulse);
+                AudioManager.Instance.PlayEffectAt(12, transform.position, 0.7f);
                 return;
             }
 

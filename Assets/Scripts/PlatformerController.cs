@@ -38,6 +38,7 @@ public class PlatformerController : MonoBehaviour {
 	private bool doubleJumped = false;
     private bool respawning = false;
     private bool jumped = false;
+    public bool demo = false;
 
 	// misc
 	private float jumpBufferedFor = 0;
@@ -72,6 +73,7 @@ public class PlatformerController : MonoBehaviour {
     private Checkpoint checkpoint;
 
     public Dimmer dimmer;
+    private bool quiting = false;
 
 	// ###############################################################
 
@@ -102,7 +104,7 @@ public class PlatformerController : MonoBehaviour {
         currentGrowth = Manager.Instance.growths;
         growthSprite.sprite = growthSprites[currentGrowth];
 
-        if(Manager.Instance.spawn != Vector3.zero)
+        if(Manager.Instance.spawn != Vector3.zero && !demo)
             transform.position = new Vector3(Manager.Instance.spawn.x, Manager.Instance.spawn.y, 0f);
 
         hp = hpMax = Manager.Instance.hpMax;
@@ -111,11 +113,25 @@ public class PlatformerController : MonoBehaviour {
         if (Manager.Instance.hasDied)
             eyepatch.SetActive(true);
 
-        cam.transform.position = new Vector3(transform.position.x, transform.position.y, cam.transform.position.z);
+        if(!demo)
+            cam.transform.position = new Vector3(transform.position.x, transform.position.y, cam.transform.position.z);
+
+        AudioManager.Instance.Highpass(false);
+        AudioManager.Instance.Lowpass(false);
+        AudioManager.Instance.targetPitch = 1f;
+
+        AudioManager.Instance.BackToDefaultMusic();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (demo) return;
+
+
+        if(Input.GetKeyUp(KeyCode.Escape)) {
+            BackToMenu();
+        }
 
         if(Application.isEditor && Input.GetKeyDown(KeyCode.R)) {
             Respawn();
@@ -563,8 +579,6 @@ public class PlatformerController : MonoBehaviour {
 
         Manager.Instance.hasDied = true;
 
-        AudioManager.Instance.BackToDefaultMusic();
-
         cam.BaseEffect(3f);
 
         respawning = true;
@@ -580,6 +594,9 @@ public class PlatformerController : MonoBehaviour {
         AudioManager.Instance.PlayEffectAt(9, transform.position, 1f);
         AudioManager.Instance.PlayEffectAt(17, transform.position, 1f);
         AudioManager.Instance.PlayEffectAt(15, transform.position, 1f);
+
+        AudioManager.Instance.Lowpass(true);
+        AudioManager.Instance.targetPitch = 0.6f;
 
         cam.BaseEffect(2f);
 
@@ -609,6 +626,8 @@ public class PlatformerController : MonoBehaviour {
     }
 
     void UpdateHp() {
+        if (demo) return;
+
         imageHp.rectTransform.sizeDelta = new Vector2(85 * hp, imageHp.rectTransform.sizeDelta.y);
         imageHpMax.rectTransform.sizeDelta = new Vector2(85 * hpMax, imageHpMax.rectTransform.sizeDelta.y);
         Manager.Instance.hpMax = hpMax;
@@ -635,5 +654,19 @@ public class PlatformerController : MonoBehaviour {
         AudioManager.Instance.PlayEffectAt(13, checkpoint.transform.position + Vector3.up * 1f);
         AudioManager.Instance.PlayEffectAt(27, checkpoint.transform.position + Vector3.up * 1f);
         AudioManager.Instance.PlayEffectAt(29, checkpoint.transform.position + Vector3.up * 1f);
+    }
+
+    void BackToMenu() {
+        if (quiting) return;
+
+        AudioManager.Instance.Highpass(true);
+
+        quiting = true;
+        dimmer.FadeIn(2f);
+        Invoke("ChangeScene", 2f);
+    }
+
+    void ChangeScene() {
+        SceneManager.LoadSceneAsync("Start");
     }
 }
