@@ -7684,11 +7684,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 169297710192481658, guid: b9c693aa0a25e4b81956a2a83d8afe94,
-        type: 2}
-      propertyPath: m_LowpassResonanceQ
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b9c693aa0a25e4b81956a2a83d8afe94, type: 2}
   m_IsPrefabParent: 0
