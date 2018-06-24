@@ -69,8 +69,6 @@ public class AudioManager : MonoBehaviour {
 		fadeOutPos = 0f;
 		fadeInPos = -1f;
 
-        Debug.Log("changing music to " + next);
-
 		fadeOutDuration = fadeOutDur;
 		fadeInDuration = fadeInDur;
 

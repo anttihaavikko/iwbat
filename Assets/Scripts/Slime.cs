@@ -37,9 +37,17 @@ public class Slime : MonoBehaviour {
 
     public SpriteRenderer ears, wing1, wing2;
 
-    public bool flying = false;
+    public bool flying = false, spitter, spitBounces;
 
     public int extraSound = 17;
+
+    public Bullet bulletPrefab;
+
+    public Vector2 dirToPlayer;
+
+    public float spitDelay = 5f, spitSpeed = 0.7f;
+
+    public Face face;
 
 	// Use this for initialization
 	public void Start () {
@@ -54,6 +62,39 @@ public class Slime : MonoBehaviour {
 
         cam = Camera.main.GetComponent<FollowCamera>();
 	}
+
+    void Spit() {
+        
+        if (!TurnToPlayer())
+        {
+            return;
+        }
+
+        var b = Instantiate(bulletPrefab, (Vector2)transform.position + dirToPlayer.normalized * 2f, Quaternion.identity) as Bullet;
+        b.sprite.color = sprite.color;
+        b.damage = damage;
+        b.canBounce = spitBounces;
+
+        b.body.AddForce(dirToPlayer.normalized * spitSpeed, ForceMode2D.Impulse);
+
+        EffectManager.Instance.AddEffect(2, b.transform.position);
+        EffectManager.Instance.AddEffect(9, b.transform.position);
+
+        AudioManager.Instance.PlayEffectAt(8, b.transform.position, 0.7f);
+
+        InitSpit();
+    }
+
+    void SpitWarning() {
+        face.Emote(Face.Emotion.Angry, Face.Emotion.Default, 1.5f);
+        AudioManager.Instance.PlayEffectAt(10, transform.position, 0.7f);
+    }
+
+    void InitSpit() {
+        var d = Random.Range(0.5f, spitDelay);
+        Invoke("SpitWarning", d * 0.6f);
+        Invoke("Spit", d);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -73,11 +114,17 @@ public class Slime : MonoBehaviour {
             return;
         }
 
+        dirToPlayer = target.position - transform.position;
+
+        if(spitter){
+            InitSpit();
+            spitter = false;
+        }
+
         if(flying) {
 
             if(Random.value < 0.075f) {
-                Vector2 dir = target.position - transform.position;
-                body.AddForce(dir.normalized * speed, ForceMode2D.Impulse);
+                body.AddForce(dirToPlayer.normalized * speed, ForceMode2D.Impulse);
                 return;
             }
 

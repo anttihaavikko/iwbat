@@ -103,7 +103,7 @@ public class PlatformerController : MonoBehaviour {
         growthSprite.sprite = growthSprites[currentGrowth];
 
         if(Manager.Instance.spawn != Vector3.zero)
-            transform.position = Manager.Instance.spawn;
+            transform.position = new Vector3(Manager.Instance.spawn.x, Manager.Instance.spawn.y, 0f);
 
         hp = hpMax = Manager.Instance.hpMax;
         UpdateHp();
@@ -124,6 +124,18 @@ public class PlatformerController : MonoBehaviour {
         if (Application.isEditor && Input.GetKeyDown(KeyCode.G))
         {
             Grow();
+        }
+
+        if (Application.isEditor && Input.GetKeyDown(KeyCode.J))
+        {
+            canDoubleJump = true;
+            bandanna.SetActive(true);
+        }
+
+        if (Application.isEditor && Input.GetKeyDown(KeyCode.T))
+        {
+            damage = 2;
+            blade.SetActive(true);
         }
 
         if (respawning) return;
@@ -423,6 +435,15 @@ public class PlatformerController : MonoBehaviour {
 
         if(coll.gameObject.tag == "Enemy") {
             TakeDamage(coll.gameObject.GetComponent<Slime>().damage, coll.contacts[0].point);
+        }
+
+        if (coll.gameObject.tag == "Bullet")
+        {
+            var b = coll.gameObject.GetComponent<Bullet>();
+
+            TakeDamage(b.damage, coll.contacts[0].point);
+
+            b.Explode();
         }
 	}
 

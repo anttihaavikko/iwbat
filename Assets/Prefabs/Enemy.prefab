@@ -699,7 +699,7 @@ MonoBehaviour:
   lookSpeed: 1
   emoteSpeed: 0.05
   mouthSprite: {fileID: 212970578621447026}
-  mouthAngry: {fileID: 21300000, guid: 1d41f434d81de4f43a33bf0f2e8490b1, type: 3}
+  mouthAngry: {fileID: 21300000, guid: 4fdc870bf98b7499ea7c1f96d45b213d, type: 3}
   mouthSad: {fileID: 21300000, guid: 1d41f434d81de4f43a33bf0f2e8490b1, type: 3}
   mouthHappy: {fileID: 21300000, guid: 1d41f434d81de4f43a33bf0f2e8490b1, type: 3}
   mouthOpen: {fileID: 21300000, guid: 1d41f434d81de4f43a33bf0f2e8490b1, type: 3}
@@ -737,6 +737,14 @@ MonoBehaviour:
   wing1: {fileID: 212678774047194050}
   wing2: {fileID: 212659018759422498}
   flying: 0
+  spitter: 0
+  extraSound: 28
+  bulletPrefab: {fileID: 114036468519962172, guid: 0eec54b62bf2845b7b85b18ff062e97d,
+    type: 2}
+  dirToPlayer: {x: 0, y: 0}
+  spitDelay: 5
+  spitSpeed: 0.7
+  face: {fileID: 114875030693145264}
 --- !u!212 &212043958207898868
 SpriteRenderer:
   m_ObjectHideFlags: 1
