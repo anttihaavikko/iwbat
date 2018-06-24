@@ -218,6 +218,7 @@ public class Slime : MonoBehaviour {
             EffectManager.Instance.AddEffect(1, transform.position);
             EffectManager.Instance.AddEffect(2, transform.position);
             EffectManager.Instance.AddEffect(3, transform.position);
+            EffectManager.Instance.AddEffect(10, transform.position);
 
             AudioManager.Instance.PlayEffectAt(3, transform.position, 0.5f);
             AudioManager.Instance.PlayEffectAt(5, transform.position, 1f);

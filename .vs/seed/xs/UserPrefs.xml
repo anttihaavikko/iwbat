@@ -1,12 +1,12 @@
 ﻿<Properties StartupConfiguration="{14E6C6AB-C673-74A6-6914-3C6B3BB0D63C}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/StartView.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Sprites/Cloud.cs">
     <Files>
-      <File FileName="Assets/Scripts/PlatformerController.cs" Line="107" Column="59" />
+      <File FileName="Assets/Scripts/PlatformerController.cs" Line="123" Column="52" />
       <File FileName="Assets/Scripts/InputMagic.cs" Line="540" Column="32" />
       <File FileName="Assets/Scripts/FollowCamera.cs" Line="22" Column="52" />
       <File FileName="Assets/Scripts/BoneToLine.cs" Line="23" Column="16" />
-      <File FileName="Assets/Scripts/Slime.cs" Line="233" Column="13" />
+      <File FileName="Assets/Scripts/Slime.cs" Line="128" Column="77" />
       <File FileName="Assets/Scripts/Swing.cs" Line="42" Column="73" />
       <File FileName="Assets/Scripts/FlyingText.cs" Line="1" Column="1" />
       <File FileName="Assets/Scripts/EffectManager.cs" Line="1" Column="1" />
@@ -17,9 +17,10 @@
       <File FileName="Assets/Scripts/BossRoom.cs" Line="24" Column="53" />
       <File FileName="Assets/Scripts/Checkpoint.cs" Line="20" Column="77" />
       <File FileName="Assets/Scripts/Manager.cs" Line="14" Column="24" />
-      <File FileName="Assets/Scripts/AudioManager.cs" Line="70" Column="19" />
+      <File FileName="Assets/Scripts/AudioManager.cs" Line="29" Column="35" />
       <File FileName="Assets/Scripts/Bullet.cs" Line="19" Column="31" />
-      <File FileName="Assets/Scripts/StartView.cs" Line="61" Column="25" />
+      <File FileName="Assets/Scripts/StartView.cs" Line="61" Column="13" />
+      <File FileName="Assets/Sprites/Cloud.cs" Line="9" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
